@@ -135,31 +135,6 @@ function createRim(x, z) {
   scene.add(rim);
 }
 
-// function createBackboard(x, z, isLeftSide = true) {
-//   const boardWidth = 1.8;
-//   const boardHeight = 1.05;
-//   const boardDepth = 0.05;
-//   const boardY = 3.35;
-//   const backOffset = 0.5;
-
-//   const geometry = new THREE.BoxGeometry(boardWidth, boardHeight, boardDepth);
-//   const material = new THREE.MeshStandardMaterial({
-//     color: 0xffffff,
-//     transparent: true,
-//     opacity: 0.5
-//   });
-
-//   const backboard = new THREE.Mesh(geometry, material);
-
-//   const adjustedX = isLeftSide ? x - backOffset : x + backOffset;
-//   backboard.position.set(adjustedX, boardY, z);
-
-//   // 🛠 Rotate it to face center
-//   backboard.rotation.y = isLeftSide ? Math.PI / 2 : -Math.PI / 2;
-
-//   backboard.castShadow = true;
-//   scene.add(backboard);
-// }
 
 function createBackboard(x, z) {
   const boardWidth = 1.8;
@@ -188,6 +163,53 @@ function createBackboard(x, z) {
   scene.add(backboard);
 }
 
+function createHoopSupport(x, z) {
+  const isLeftSide = x < 0;
+
+  // Main vertical pole
+  const poleHeight = 3.0;
+  const poleWidth = 0.2;
+  const poleOffset = isLeftSide ? -1.2 : 1.2;
+  const poleX = x + poleOffset;
+  const poleY = poleHeight / 2;
+
+  const poleGeometry = new THREE.BoxGeometry(poleWidth, poleHeight, poleWidth);
+  const poleMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+  const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+  pole.position.set(poleX, poleY, z);
+  pole.castShadow = true;
+  scene.add(pole);
+
+  // Diagonal support arm
+  const armMaterial = new THREE.MeshStandardMaterial({ color: 0x999999 });
+  const armRadius = 0.04;
+  const armLength = 0.6;  
+
+  //(top of pole)
+  const start = new THREE.Vector3(poleX, poleHeight, z);
+  const target = new THREE.Vector3(x, 3.05, z);
+  const direction = new THREE.Vector3().subVectors(target, start).normalize();
+
+  const end = new THREE.Vector3().addVectors(start, direction.clone().multiplyScalar(armLength));
+
+  const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+
+  // Create arm 
+  const armGeometry = new THREE.CylinderGeometry(armRadius, armRadius, armLength, 16);
+  const arm = new THREE.Mesh(armGeometry, armMaterial);
+  arm.position.copy(mid);
+
+  const up = new THREE.Vector3(0, 1, 0);
+  const axis = up.clone().cross(direction).normalize();
+  const angle = Math.acos(up.clone().dot(direction));
+  arm.quaternion.setFromAxisAngle(axis, angle);
+
+  scene.add(arm);
+
+
+}
+
+
 // Create all elements
 createBasketballCourt();
 addCenterLine();
@@ -202,6 +224,9 @@ createBackboard(14, 0);
 //left rim and backboard
 createRim(-14, 0);
 createBackboard(-14, 0);
+createHoopSupport(-13.9, 0);  // Left hoop support
+createHoopSupport(13.9, 0); // Right hoop support
+
 
 
 // Set camera position for better view
