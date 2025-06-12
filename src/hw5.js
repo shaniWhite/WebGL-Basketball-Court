@@ -192,14 +192,14 @@ function createBackboard(x, z) {
 createBasketballCourt();
 addCenterLine();
 addCenterCircle();
+//right arc
 addThreePointArc(0, 15, 6, false);
+//left arc
 addThreePointArc(0, -15, 6, true);
-
-// Right side hoop
-createRim(14, 0);        // X is near edge of court, Z = 0 for center
+//right rim and backboard
+createRim(14, 0);   
 createBackboard(14, 0);
-
-// Left side hoop
+//left rim and backboard
 createRim(-14, 0);
 createBackboard(-14, 0);
 
