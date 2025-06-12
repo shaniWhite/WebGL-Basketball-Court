@@ -173,6 +173,14 @@ function createHoopSupport(x, z) {
   const poleX = x + poleOffset;
   const poleY = poleHeight / 2;
 
+  // Bottom padded base
+  const baseGeometry = new THREE.BoxGeometry(0.3, 1.2, 0.3);
+  const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+  const base = new THREE.Mesh(baseGeometry, baseMaterial);
+  base.position.set(poleX, 0.6, z);
+  scene.add(base);
+
+
   const poleGeometry = new THREE.BoxGeometry(poleWidth, poleHeight, poleWidth);
   const poleMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
   const pole = new THREE.Mesh(poleGeometry, poleMaterial);
@@ -183,7 +191,7 @@ function createHoopSupport(x, z) {
   // Diagonal support arm
   const armMaterial = new THREE.MeshStandardMaterial({ color: 0x999999 });
   const armRadius = 0.04;
-  const armLength = 0.6;  
+  const armLength = 0.8;  
 
   //(top of pole)
   const start = new THREE.Vector3(poleX, poleHeight, z);
@@ -205,8 +213,58 @@ function createHoopSupport(x, z) {
   arm.quaternion.setFromAxisAngle(axis, angle);
 
   scene.add(arm);
+}
 
+function addNet(x, y, z, radius = 0.45, segments = 12, depth = 0.7,taper = 0.6) {
+  const netMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+  const netGeometry = new THREE.BufferGeometry();
+  const netPoints = [];
 
+  const rings = 3; // number of horizontal loops
+  const verticals = []; 
+
+  // vertical strands
+  for (let i = 0; i < segments; i++) {
+    const angle = (i / segments) * 2 * Math.PI;
+
+    const x0 = x + Math.cos(angle) * radius;
+    const z0 = z + Math.sin(angle) * radius;
+    
+    const x1 = x + Math.cos(angle) * (radius * taper);  // inward taper
+    const z1 = z + Math.sin(angle) * (radius * taper);
+    const y1 = y - depth;
+
+    netPoints.push(new THREE.Vector3(x0, y, z0));      // rim point
+    netPoints.push(new THREE.Vector3(x1, y1, z1));     // tapered end
+    verticals.push({ top: new THREE.Vector3(x0, y, z0), bottom: new THREE.Vector3(x1, y1, z1) });
+  }
+
+  // Horizontal loops (between vertical lines)
+  for (let r = 1; r <= rings; r++) {
+    const t = r / (rings + 1);
+    const loopPoints = [];
+
+    for (let i = 0; i < segments; i++) {
+      const a = verticals[i].top;
+      const b = verticals[i].bottom;
+
+      const p = new THREE.Vector3().lerpVectors(a, b, t);
+      loopPoints.push(p);
+    }
+
+    // connect points in a ring
+    for (let i = 0; i < segments; i++) {
+      const current = loopPoints[i];
+      const next = loopPoints[(i + 1) % segments];
+
+      netPoints.push(current);
+      netPoints.push(next);
+    }
+  }
+
+  netGeometry.setFromPoints(netPoints);
+  const net = new THREE.LineSegments(netGeometry, netMaterial);
+  scene.add(net);
 }
 
 
@@ -224,8 +282,12 @@ createBackboard(14, 0);
 //left rim and backboard
 createRim(-14, 0);
 createBackboard(-14, 0);
-createHoopSupport(-13.9, 0);  // Left hoop support
-createHoopSupport(13.9, 0); // Right hoop support
+createHoopSupport(-14, 0);  // Left hoop support
+createHoopSupport(14, 0); // Right hoop support
+addNet(14.8, 3.05, 0);   // right hoop
+addNet(-14, 3.05, 0);    // left hoop
+
+
 
 
 
