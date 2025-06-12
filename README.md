@@ -6,14 +6,11 @@
 3. Start the local web server: `node index.js`
 4. Open your browser and go to http://localhost:8000
 
-## Complete Instructions
-**All detailed instructions, requirements, and specifications can be found in:**
-`basketball_exercise_instructions.html`
 
 ## Group Members
 **MANDATORY: Add the full names of all group members here:**
-- [Member 1 Full Name]
-- [Member 2 Full Name]
+- Shani White - 207880394
+- Daphne Messing 
 
 ## Technical Details
 - Run the server with: `node index.js`
