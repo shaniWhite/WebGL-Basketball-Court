@@ -72,28 +72,6 @@ function addCenterCircle(radius = 2, segments = 64) {
   scene.add(circle);
 }
 
-// function addThreePointArc(centerZ, radius = 6.75, flip = false, segments = 64) {
-//   const points = [];
-//   const startAngle = Math.PI / 2;       // 90 deg
-//   const endAngle = (3 * Math.PI) / 2;   // 270 deg
-
-//   for (let i = 0; i <= segments; i++) {
-//     const t = i / segments;
-//     const angle = startAngle + (endAngle - startAngle) * t;
-
-//     const x = Math.cos(angle) * radius;
-//     const zOffset = Math.sin(angle) * radius;
-
-//     const z = flip ? centerZ + zOffset : centerZ - zOffset;
-//     points.push(new THREE.Vector3(x, 0.11, z));
-//   }
-
-//   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-//   const material = new THREE.LineBasicMaterial({ color: 0xffffff });
-//   const arc = new THREE.Line(geometry, material);
-//   scene.add(arc);
-// }
-
 function addThreePointArc(centerZ, centerX = 0, radius = 6.75, flip = false, segments = 64) {
   const points = [];
   const startAngle = Math.PI / 2;
@@ -267,6 +245,77 @@ function addNet(x, y, z, radius = 0.45, segments = 12, depth = 0.7,taper = 0.6) 
   scene.add(net);
 }
 
+function createBasketball() {
+  const ballRadius = 0.7;
+  const segments = 32;
+
+  const ballGeometry = new THREE.SphereGeometry(ballRadius, segments, segments);
+  const ballMaterial = new THREE.MeshStandardMaterial({
+    color: 0xff8c00,
+    metalness: 0.2,
+    roughness: 0.6
+  });
+
+  const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+  ball.position.set(0, ballRadius*2 + 0.01, 0);  // center court
+  ball.castShadow = true;
+  scene.add(ball);
+
+  addSeamLines(ball.position, ballRadius);
+}
+
+
+function addSeamLines(center, radius) {
+  const seamMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+  const segments = 100;
+
+  const horizontalPoints = [];
+  const verticalPoints = [];
+  const diagonal1Points = [];
+  const diagonal2Points = [];
+
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * 2 * Math.PI;
+
+    // Horizontal ring (XZ plane)
+    horizontalPoints.push(new THREE.Vector3(
+      center.x + Math.cos(angle) * radius,
+      center.y,
+      center.z + Math.sin(angle) * radius
+    ));
+
+    // Vertical ring (YZ plane)
+    verticalPoints.push(new THREE.Vector3(
+      center.x,
+      center.y + Math.cos(angle) * radius,
+      center.z + Math.sin(angle) * radius
+    ));
+
+    // Diagonal ring 1 (front-to-back curve, wrapping diagonally)
+    diagonal1Points.push(new THREE.Vector3(
+      center.x + Math.sin(angle) * radius ,
+      center.y + Math.cos(angle) * radius*0.2,
+      center.z + Math.cos(angle) * radius 
+    ));
+
+    diagonal2Points.push(new THREE.Vector3(
+      center.x - Math.sin(angle) * radius * 0.8,
+      center.y + Math.cos(angle) * radius*0.2 ,
+      center.z - Math.cos(angle) * radius * 0.8
+    ));
+
+  }
+
+  const line = (points) =>
+    new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(points), seamMaterial);
+
+  scene.add(line(horizontalPoints));  // equator
+  scene.add(line(verticalPoints));    // vertical ring
+  scene.add(line(diagonal1Points));   // side seam 1 ✅
+  scene.add(line(diagonal2Points));   // side seam 2 ✅
+}
+
+
 
 // Create all elements
 createBasketballCourt();
@@ -284,8 +333,10 @@ createRim(-14, 0);
 createBackboard(-14, 0);
 createHoopSupport(-14, 0);  // Left hoop support
 createHoopSupport(14, 0); // Right hoop support
-addNet(14.8, 3.05, 0);   // right hoop
+addNet(14, 3.05, 0);   // right hoop
 addNet(-14, 3.05, 0);    // left hoop
+createBasketball();
+
 
 
 
