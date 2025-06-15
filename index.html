@@ -1,15 +1,64 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>HW5</title>
-		<style>
-			body { margin: 0; }
-		</style>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
-	</head>
-	<body>
-		<script src="src/hw5.js" type="module"></script>
+  <head>
+    <meta charset="utf-8" />
+    <title>HW5</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
 
-	</body>
+      #scoreboard {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: rgba(255, 255, 255, 0.85);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 18px;
+        font-family: sans-serif;
+        color: #000;
+        z-index: 100;
+      }
+
+      #instructions {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background-color: rgba(0, 0, 0, 0.65);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: sans-serif;
+        color: #fff;
+        z-index: 100;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+      }
+	  #instructions li {
+		margin-bottom: 4px;
+	  }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  </head>
+
+  <body>
+    <!-- ✅ UI Containers -->
+    <div id="scoreboard">Score: 0</div>
+
+    <div id="instructions">
+		<h3>Controls:</h3>
+		<ul>
+			<li><strong>O</strong> – Toggle orbit camera</li>
+			<li><strong>Left mouse</strong> – Orbit</li>
+			<li><strong>Right mouse</strong> – Pan</li>
+			<li><strong>Middle mouse / scroll</strong> – Zoom</li>
+		</ul>
+    </div>
+
+    <!-- ✅ JS Entry -->
+    <script src="src/hw5.js" type="module"></script>
+  </body>
 </html>
