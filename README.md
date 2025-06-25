@@ -55,6 +55,9 @@
 ## Screenshots
 - ✅ Overall view of the basketball court with hoops  
 ![](screenshots/full_court.png)
-- ✅ Close-up view of basketball hoops with nets  
+- ✅ Close-up view of basketball hoops with nets 
+![](screenshots/hoops.png)
 - ✅ Basketball positioned at center court  
+![](screenshots/basketball.png)
 - ✅ Demonstration of camera orbit functionality  
+![](screenshots/orbit_demo.mp4)
