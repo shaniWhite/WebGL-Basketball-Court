@@ -1,4 +1,7 @@
 
+
+// Shani White 
+// Daphne Messing 
 import {OrbitControls} from './OrbitControls.js'
 
 
@@ -65,9 +68,8 @@ function createBasketballCourt() {
 
   //  Three-Point Arcs
   const arcSegments = 64;
-  const arcRadius = 6;
 
-  const drawArc = (centerZ, centerX, radius = 6, flip = false) => {
+  const drawArc = (centerZ, centerX, radius = 8, flip = false) => {
     const arcPoints = [];
     const startAngle = Math.PI / 2;
     const endAngle = (3 * Math.PI) / 2;
@@ -90,159 +92,34 @@ function createBasketballCourt() {
   };
 
   // Match your exact original calls:
-  drawArc(0, 15, 6, false);  // Right side
-  drawArc(0, -15, 6, true);  // Left side
+  drawArc(0, 11, 5, false);  // Right side
+  drawArc(0, -11, 5, true);  // Left side
+
+  // Add blue hash/block lines on both sides of the court
+  const lineLength = 4;
+  const offsetX = 13;
+  const offsetZ = -5;
+  const y = 0.11;
+  const color = 0xffffff;
+
+  const positions = [
+    [-offsetX, offsetZ],  // left side, top half
+    [offsetX, offsetZ],   // right side, top half
+    [-offsetX, -offsetZ], // left side, bottom half
+    [offsetX, -offsetZ]   // right side, bottom half
+  ];
+
+  for (const [x, z] of positions) {
+    const lineGeom = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(x - lineLength / 2, y, z),
+      new THREE.Vector3(x + lineLength / 2, y, z)
+    ]);
+    const line = new THREE.Line(lineGeom, new THREE.LineBasicMaterial({ color }));
+    scene.add(line);
+  }
+
 
 }
-
-
-// function createRim(x, z) {
-//   const rimRadius = 0.45;  // standard rim radius
-//   const rimTube = 0.05;    // thickness
-//   const rimHeight = 3.05;  // 10 feet
-
-//   const geometry = new THREE.TorusGeometry(rimRadius, rimTube, 16, 100);
-//   const material = new THREE.MeshStandardMaterial({ color: 0xff6600 });
-//   const rim = new THREE.Mesh(geometry, material);
-
-//   rim.position.set(x, rimHeight, z);
-//   rim.rotation.x = Math.PI / 2;  // rotate to face forward
-//   rim.castShadow = true;
-
-//   scene.add(rim);
-// }
-
-
-// function createBackboard(x, z) {
-//   const boardWidth = 1.8;
-//   const boardHeight = 1.05;
-//   const boardDepth = 0.05;
-//   const boardY = 3.35;
-//   const backOffset = 0.5;
-
-//   const geometry = new THREE.BoxGeometry(boardWidth, boardHeight, boardDepth);
-//   const material = new THREE.MeshStandardMaterial({
-//     color: 0xffffff,
-//     transparent: true,
-//     opacity: 0.5
-//   });
-
-//   const backboard = new THREE.Mesh(geometry, material);
-
-//   // Automatically flip based on side of court
-//   const isLeftSide = x < 0;
-//   const adjustedX = isLeftSide ? x - backOffset : x + backOffset;
-
-//   backboard.position.set(adjustedX, boardY, z);
-//   backboard.rotation.y = isLeftSide ? Math.PI / 2 : -Math.PI / 2;
-
-//   backboard.castShadow = true;
-//   scene.add(backboard);
-// }
-
-// function createHoopSupport(x, z) {
-//   const isLeftSide = x < 0;
-
-//   // Main vertical pole
-//   const poleHeight = 3.0;
-//   const poleWidth = 0.2;
-//   const poleOffset = isLeftSide ? -1.2 : 1.2;
-//   const poleX = x + poleOffset;
-//   const poleY = poleHeight / 2;
-
-//   // Bottom padded base
-//   const baseGeometry = new THREE.BoxGeometry(0.3, 1.2, 0.3);
-//   const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
-//   const base = new THREE.Mesh(baseGeometry, baseMaterial);
-//   base.position.set(poleX, 0.6, z);
-//   scene.add(base);
-
-
-//   const poleGeometry = new THREE.BoxGeometry(poleWidth, poleHeight, poleWidth);
-//   const poleMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-//   const pole = new THREE.Mesh(poleGeometry, poleMaterial);
-//   pole.position.set(poleX, poleY, z);
-//   pole.castShadow = true;
-//   scene.add(pole);
-
-//   // Diagonal support arm
-//   const armMaterial = new THREE.MeshStandardMaterial({ color: 0x999999 });
-//   const armRadius = 0.04;
-//   const armLength = 0.8;  
-
-//   //(top of pole)
-//   const start = new THREE.Vector3(poleX, poleHeight, z);
-//   const target = new THREE.Vector3(x, 3.05, z);
-//   const direction = new THREE.Vector3().subVectors(target, start).normalize();
-
-//   const end = new THREE.Vector3().addVectors(start, direction.clone().multiplyScalar(armLength));
-
-//   const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-
-//   // Create arm 
-//   const armGeometry = new THREE.CylinderGeometry(armRadius, armRadius, armLength, 16);
-//   const arm = new THREE.Mesh(armGeometry, armMaterial);
-//   arm.position.copy(mid);
-
-//   const up = new THREE.Vector3(0, 1, 0);
-//   const axis = up.clone().cross(direction).normalize();
-//   const angle = Math.acos(up.clone().dot(direction));
-//   arm.quaternion.setFromAxisAngle(axis, angle);
-
-//   scene.add(arm);
-// }
-
-// function addNet(x, y, z, radius = 0.45, segments = 12, depth = 0.7,taper = 0.6) {
-//   const netMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-//   const netGeometry = new THREE.BufferGeometry();
-//   const netPoints = [];
-
-//   const rings = 3; // number of horizontal loops
-//   const verticals = []; 
-
-//   // vertical strands
-//   for (let i = 0; i < segments; i++) {
-//     const angle = (i / segments) * 2 * Math.PI;
-
-//     const x0 = x + Math.cos(angle) * radius;
-//     const z0 = z + Math.sin(angle) * radius;
-    
-//     const x1 = x + Math.cos(angle) * (radius * taper);  // inward taper
-//     const z1 = z + Math.sin(angle) * (radius * taper);
-//     const y1 = y - depth;
-
-//     netPoints.push(new THREE.Vector3(x0, y, z0));      // rim point
-//     netPoints.push(new THREE.Vector3(x1, y1, z1));     // tapered end
-//     verticals.push({ top: new THREE.Vector3(x0, y, z0), bottom: new THREE.Vector3(x1, y1, z1) });
-//   }
-
-//   // Horizontal loops (between vertical lines)
-//   for (let r = 1; r <= rings; r++) {
-//     const t = r / (rings + 1);
-//     const loopPoints = [];
-
-//     for (let i = 0; i < segments; i++) {
-//       const a = verticals[i].top;
-//       const b = verticals[i].bottom;
-
-//       const p = new THREE.Vector3().lerpVectors(a, b, t);
-//       loopPoints.push(p);
-//     }
-
-//     // connect points in a ring
-//     for (let i = 0; i < segments; i++) {
-//       const current = loopPoints[i];
-//       const next = loopPoints[(i + 1) % segments];
-
-//       netPoints.push(current);
-//       netPoints.push(next);
-//     }
-//   }
-
-//   netGeometry.setFromPoints(netPoints);
-//   const net = new THREE.LineSegments(netGeometry, netMaterial);
-//   scene.add(net);
-// }
 
 function createHoopSide(x, z) {
   const isLeftSide = x < 0;
@@ -430,12 +307,72 @@ function createBasketball() {
 }
 
 
+function FreeThrowLine(x, z, width = 6, height = 5, color = 0x5a2d0c) {
+  const geometry = new THREE.PlaneGeometry(width, height);
+  const material = new THREE.MeshStandardMaterial({
+    color: color,
+    side: THREE.DoubleSide
+  });
+
+  const paint = new THREE.Mesh(geometry, material);
+  paint.rotation.x = -Math.PI / 2; // flat on ground
+
+  // ✅ Position rectangle to start at the baseline and go inward
+  paint.position.set(x, 0.11, z); // Centered forward from rim
+
+  scene.add(paint);
+}
+
+function addFreeThrowArcs(xCenter, zCenter, radius = 1.8, segments = 32) {
+  const solidStartAngle = Math.PI / 2;
+  const solidEndAngle = -Math.PI / 2;
+  const flipX = xCenter > 0;  // flip direction if right side
+
+  // Solid arc (front half - facing basket)
+  const solidPoints = [];
+  for (let i = 0; i <= segments; i++) {
+    const angle = solidStartAngle + (i / segments) * (solidEndAngle - solidStartAngle);
+    const xRaw = Math.cos(angle) * radius;
+    const z = zCenter + Math.sin(angle) * radius;
+    const x = xCenter + (flipX ? -xRaw : xRaw);  // flip solid arc inward if on right
+    solidPoints.push(new THREE.Vector3(x, 0.12, z));
+  }
+
+  const solidGeometry = new THREE.BufferGeometry().setFromPoints(solidPoints);
+  const solidMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+  scene.add(new THREE.Line(solidGeometry, solidMaterial));
+
+  // Dashed arc (back half - away from basket)
+  const dashedPoints = [];
+  for (let i = 0; i <= segments; i++) {
+    const angle = solidStartAngle + (i / segments) * (solidEndAngle - solidStartAngle);
+    const xRaw = Math.cos(angle) * radius;
+    const z = zCenter - Math.sin(angle) * radius;
+    const x = xCenter - (flipX ? -xRaw : xRaw);  // flip dashed arc outward if on right
+    dashedPoints.push(new THREE.Vector3(x, 0.12, z));
+  }
+
+  const dashedGeometry = new THREE.BufferGeometry().setFromPoints(dashedPoints);
+  const dashedMaterial = new THREE.LineDashedMaterial({
+    color: 0xffffff,
+    dashSize: 0.2,
+    gapSize: 0.15
+  });
+
+  const dashedArc = new THREE.Line(dashedGeometry, dashedMaterial);
+  dashedArc.computeLineDistances();
+  scene.add(dashedArc);
+}
 
 
 // Create all elements
 createBasketballCourt();
 createHoopSide(14, 0);   // Right hoop
 createHoopSide(-14, 0);  // Left hoop
+FreeThrowLine(12, 0);    // Right side
+FreeThrowLine(-12, 0);   // Left side 
+addFreeThrowArcs(-9, 0);  // Left side hoop
+addFreeThrowArcs(9, 0);   // Right side hoop
 
 createBasketball();
 
@@ -451,20 +388,6 @@ camera.applyMatrix4(cameraTranslate);
 const controls = new OrbitControls(camera, renderer.domElement);
 let isOrbitEnabled = true;
 
-// Instructions display
-// const instructionsElement = document.createElement('div');
-// instructionsElement.style.position = 'absolute';
-// instructionsElement.style.bottom = '20px';
-// instructionsElement.style.left = '20px';
-// instructionsElement.style.color = 'white';
-// instructionsElement.style.fontSize = '16px';
-// instructionsElement.style.fontFamily = 'Arial, sans-serif';
-// instructionsElement.style.textAlign = 'left';
-// instructionsElement.innerHTML = `
-//   <h3>Controls:</h3>
-//   <p>O - Toggle orbit camera</p>
-// `;
-// document.body.appendChild(instructionsElement);
 
 // Handle key events
 function handleKeyDown(e) {
