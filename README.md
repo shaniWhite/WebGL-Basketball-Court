@@ -3,16 +3,22 @@
 ###### Group Members ############
 
 - Shani White - 207880394   
-- Daphne Messing - 
+- Daphne Messing - 322630518
 
 ###### ######################
 
 ## How to Run the Project
 
-1. Clone or download this repository to your local machine.
-2. Ensure the folder structure is preserved (especially the `/src` directory and the basketball texture file).
-3. Open `index.html` in a modern browser (e.g. Chrome) — it requires no server setup.
-4. Use the mouse to explore the court interactively!
+## How to Run This Project
+
+- Clone or download the repository to your local machine.
+- Navigate to the project folder in your terminal.
+- Run `npm install` to install all dependencies.
+- Start the development server with `npm run dev`.
+- Open the local server URL shown in the terminal (usually http://localhost:5173/) in a modern browser like Chrome.
+- Use your mouse to interactively orbit, zoom, and pan around the basketball court.
+- Ensure the folder structure is preserved, especially `/src`, `/screenshots`, and any texture assets used.
+
 
 ## Features Implemented
 
@@ -41,7 +47,7 @@
 - Initial camera positioned for court overview
 - Orbit camera controls (toggle with **O** key)
 
-## Additional features 
+## Additional features implemented
 - More detailed court markings- Painted key area rectangles and free point line 
 
 ## Known Issues or Limitations
