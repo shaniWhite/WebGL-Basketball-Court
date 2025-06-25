@@ -20,7 +20,6 @@
 - Court floor using `BoxGeometry`
 - Center line and center circle
 - Two three-point arcs (left and right)
-- Painted key area rectangles (free throw area) on both sides
 
 ✅ Two detailed basketball hoops with:
 - Transparent rectangular backboards
@@ -42,11 +41,11 @@
 - Initial camera positioned for court overview
 - Orbit camera controls (toggle with **O** key)
 
-## Known Issues or Limitations
+## Additional features 
+- More detailed court markings- Painted key area rectangles and free point line 
 
-- No physics or interactive ball movement — this will be implemented in HW6.
-- No scoreboard logic yet (UI placeholder only).
-- No crowd or stadium environment.
+## Known Issues or Limitations
+- The basketball uses a texture-mapped image for its visual design, not a procedurally generated or animated mesh
 
 ## External Assets Used
 
