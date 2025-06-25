@@ -1,56 +1,63 @@
-# Exercise 5 – Basketball Court with THREE.js
+# WebGL Basketball Court - HW5
 
-## Overview
-This exercise will have you implement a basketball court scene with interactive elements using THREE.js. The provided code gives you a basic brown court surface as a starting point. You will need to add court lines, basketball hoops, and implement a basketball with physics-based movement.
+###### Group Members ############
 
-## Tasks
-1. Add court lines to the basketball court:
-   - Center line
-   - Center circle
-   - Three-point lines on both sides
-   - Other boundary lines (sidelines, baselines, free throw lines, etc.)
+- Shani White - 207880394   
+- Daphne Messing - 
 
-2. Create basketball hoops:
-   - Backboard with a transparent material
-   - Rim with appropriate size (~45cm / 18 inch diameter)
-   - Net using line segments
-   - Support structure (pole and base)
-   - Place hoops on both ends of the court
+###### ######################
 
-3. Implement a basketball:
-   - Create a sphere with orange material
-   - Add black lines to simulate basketball seams
-   - Implement physics for the ball (gravity, bouncing, etc.)
+## How to Run the Project
 
-4. Add user controls:
-   - Move the ball using arrow keys
-   - Adjust shot power
-   - Shoot the ball with spacebar
-   - Reset ball position
-   
-5. Scoring system (Optional, for extra points):
-   - Detect when the ball passes through a hoop
-   - Display the score on the screen
-   - Create visual/audio feedback when scoring
+1. Clone or download this repository to your local machine.
+2. Ensure the folder structure is preserved (especially the `/src` directory and the basketball texture file).
+3. Open `index.html` in a modern browser (e.g. Chrome) — it requires no server setup.
+4. Use the mouse to explore the court interactively!
 
-## Technical Requirements
-- All objects should cast and receive shadows
-- Use appropriate meshes and materials for each object
-- Physics implementation should look realistic
-- The scene should be responsive when the browser window is resized
+## Features Implemented
 
-## Getting Started
-- The starter code already includes:
-  - Basic THREE.js setup with a scene, camera, and renderer
-  - A simple brown court surface
-  - Lighting setup with shadows enabled
-  - Orbit controls for easy scene navigation (toggle with 'o' key)
-  
-- Examine the `createBasketballCourt()` function and build upon it
-- Use the `degrees_to_radians()` helper function for any rotation calculations
-- Add all your code to the hw5.js file
+✅ Regulation-size basketball court with:
+- Court floor using `BoxGeometry`
+- Center line and center circle
+- Two three-point arcs (left and right)
+- Painted key area rectangles (free throw area) on both sides
 
-## Reference
-- Standard basketball court dimensions are ~28m x 15m (92ft x 50ft)
-- Standard basketball rim height is 3.05m (10ft)
-- Use different materials for different parts (MeshBasicMaterial for lines, MeshPhongMaterial for shiny objects)
+✅ Two detailed basketball hoops with:
+- Transparent rectangular backboards
+- Orange torus-shaped rims at regulation height (3.05m)
+- Net meshes with vertical and horizontal strands
+- Diagonal support arms and vertical poles
+
+✅ Static basketball:
+- Proper orange color using a custom basketball texture
+- Accurate size and position (center court)
+- Includes black seam lines
+
+✅ UI Elements:
+- Scoreboard placeholder (`Score: 0`)
+- On-screen control instructions
+
+✅ Lighting & Camera:
+- Ambient and directional lights with shadow casting
+- Initial camera positioned for court overview
+- Orbit camera controls (toggle with **O** key)
+
+## Known Issues or Limitations
+
+- No physics or interactive ball movement — this will be implemented in HW6.
+- No scoreboard logic yet (UI placeholder only).
+- No crowd or stadium environment.
+
+## External Assets Used
+
+- [basketball.png](./src/textures/basketball.png): Used as the texture for the basketball. (Instructor-provided or CC0 licensed if sourced externally)
+
+## Screenshots
+
+(Add your screenshots here!)
+
+- ✅ Overall view of the basketball court with hoops  
+![](screenshots/full_court.png)
+- ✅ Close-up view of basketball hoops with nets  
+- ✅ Basketball positioned at center court  
+- ✅ Demonstration of camera orbit functionality  
