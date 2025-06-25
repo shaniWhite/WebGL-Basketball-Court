@@ -60,4 +60,4 @@
 - ✅ Basketball positioned at center court  
 ![](screenshots/basketball.png)
 - ✅ Demonstration of camera orbit functionality  
-![](screenshots/orbit_demo.mp4)
+![](screenshots/orbit_demo.gif)
