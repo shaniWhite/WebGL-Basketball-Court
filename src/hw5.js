@@ -30,6 +30,15 @@ scene.add(directionalLight);
 renderer.shadowMap.enabled = true;
 directionalLight.castShadow = true;
 const basketballSpeed = 0.1;  // Movement speed
+
+let shotPower = 50;             // Starting power at 50%
+let isBallMoving = false;
+let velocity = new THREE.Vector3(0, 0, 0);
+const gravity = -0.02; // adjust for realism
+const restitution = 0.6; // Energy loss (0.6 = 60% of velocity retained after bounce)
+const minPower = 0;
+const maxPower = 100;
+
 const keysPressed = {
   ArrowLeft: false,
   ArrowRight: false,
@@ -417,7 +426,25 @@ document.addEventListener('keydown', (e) => {
   if (e.key in keysPressed) {
     keysPressed[e.key] = true;
   }
+
+  // W/S keys to adjust shot power
+  if (e.key === 'w' || e.key === 'W') {
+    shotPower = Math.min(maxPower, shotPower + 1);
+    updatePowerBar();
+  }
+
+  if (e.key === 's' || e.key === 'S') {
+    shotPower = Math.max(minPower, shotPower - 1);
+    updatePowerBar();
+  }
+
+  if (e.key === ' ') {
+    if (!isBallMoving) {
+      shootBall();
+    }
+  }
 });
+
 
 document.addEventListener('keyup', (e) => {
   if (e.key in keysPressed) {
@@ -451,9 +478,73 @@ function animate() {
     }
   }
 
+    // Physics update
+  if (isBallMoving) {
+    velocity.y += gravity;
+    basketballMesh.position.add(velocity);
+
+    // Ground collision + bounce
+    if (basketballMesh.position.y <= 0.7) {
+      basketballMesh.position.y = 0.7;
+
+      // If the vertical velocity is very small, stop bouncing
+      if (Math.abs(velocity.y) < 0.05) {
+        velocity.set(0, 0, 0);
+        isBallMoving = false;
+      } else {
+        // Bounce: invert Y velocity and apply energy loss
+        velocity.y = -velocity.y * restitution;
+      }
+    }
+  }
+
+
   controls.enabled = isOrbitEnabled;
   controls.update();
   renderer.render(scene, camera);
+}
+
+// POWER BAR UI
+const powerBarContainer = document.createElement('div');
+powerBarContainer.style.position = 'absolute';
+powerBarContainer.style.bottom = '20px';
+powerBarContainer.style.left = '50%';
+powerBarContainer.style.transform = 'translateX(-50%)';
+powerBarContainer.style.width = '300px';
+powerBarContainer.style.height = '20px';
+powerBarContainer.style.border = '2px solid white';
+powerBarContainer.style.background = '#333';
+powerBarContainer.style.zIndex = 10;
+document.body.appendChild(powerBarContainer);
+
+const powerBarFill = document.createElement('div');
+powerBarFill.style.height = '100%';
+powerBarFill.style.width = `${shotPower}%`;
+powerBarFill.style.background = 'limegreen';
+powerBarFill.style.transition = 'width 0.1s ease-out';
+powerBarContainer.appendChild(powerBarFill);
+
+function updatePowerBar() {
+  powerBarFill.style.width = `${shotPower}%`;
+}
+
+function shootBall() {
+  const ballPos = basketballMesh.position.clone();
+  const leftHoop = new THREE.Vector3(-14, 3.05, 0);
+  const rightHoop = new THREE.Vector3(14, 3.05, 0);
+
+  // Pick the nearest hoop
+  const distLeft = ballPos.distanceTo(leftHoop);
+  const distRight = ballPos.distanceTo(rightHoop);
+  const target = distLeft < distRight ? leftHoop : rightHoop;
+
+  const dir = new THREE.Vector3().subVectors(target, ballPos).normalize();
+
+  // Apply shot velocity based on power (scaled)
+  velocity.copy(dir.multiplyScalar(shotPower * 0.03));  // Tune factor as needed
+  velocity.y = shotPower * 0.02;  // Add vertical arc
+
+  isBallMoving = true;
 }
 
 
