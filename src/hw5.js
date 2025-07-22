@@ -480,23 +480,33 @@ function animate() {
 
     // Physics update
   if (isBallMoving) {
+    // Apply gravity
     velocity.y += gravity;
+
+    // Update position
     basketballMesh.position.add(velocity);
 
-    // Ground collision + bounce
+    // Ground collision
     if (basketballMesh.position.y <= 0.7) {
       basketballMesh.position.y = 0.7;
 
-      // If the vertical velocity is very small, stop bouncing
-      if (Math.abs(velocity.y) < 0.05) {
+      // Apply energy loss to all velocity components
+      velocity.y = -velocity.y * restitution;
+      velocity.x *= 0.8; // friction-like effect
+      velocity.z *= 0.8;
+
+      // Stop ball if it is nearly stationary
+      if (Math.abs(velocity.y) < 0.05 && Math.abs(velocity.x) < 0.01 && Math.abs(velocity.z) < 0.01) {
         velocity.set(0, 0, 0);
         isBallMoving = false;
-      } else {
-        // Bounce: invert Y velocity and apply energy loss
-        velocity.y = -velocity.y * restitution;
       }
     }
+
+    // Clamp to court bounds
+    basketballMesh.position.x = Math.max(courtBounds.minX, Math.min(courtBounds.maxX, basketballMesh.position.x));
+    basketballMesh.position.z = Math.max(courtBounds.minZ, Math.min(courtBounds.maxZ, basketballMesh.position.z));
   }
+
 
 
   controls.enabled = isOrbitEnabled;
