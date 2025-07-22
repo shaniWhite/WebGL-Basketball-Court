@@ -443,6 +443,22 @@ document.addEventListener('keydown', (e) => {
       shootBall();
     }
   }
+
+  if (e.key === 'r' || e.key === 'R') {
+    // Reset basketball to center court
+    basketballMesh.position.set(0, 0.7, 0);
+
+    // Reset velocity
+    velocity.set(0, 0, 0);
+
+    // Reset shot power
+    shotPower = 50;
+    updatePowerBar();
+
+    // Clear physics
+    isBallMoving = false;
+  }
+
 });
 
 
