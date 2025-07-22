@@ -4,7 +4,7 @@
 // Daphne Messing 
 
 import {OrbitControls} from './OrbitControls.js'
-
+let basketballMesh;
 
 // initialize the 3D scene
 const scene = new THREE.Scene();
@@ -29,6 +29,20 @@ scene.add(directionalLight);
 // Enable shadows
 renderer.shadowMap.enabled = true;
 directionalLight.castShadow = true;
+const basketballSpeed = 0.1;  // Movement speed
+const keysPressed = {
+  ArrowLeft: false,
+  ArrowRight: false,
+  ArrowUp: false,
+  ArrowDown: false
+};
+
+const courtBounds = {
+  minX: -14,
+  maxX: 14,
+  minZ: -7,
+  maxZ: 7
+};
 
 function degrees_to_radians(degrees) {
   var pi = Math.PI;
@@ -293,7 +307,7 @@ function createBasketball() {
   });
   
   // Create basketball mesh
-  const basketballMesh = new THREE.Mesh(basketballGeometry, basketballMaterial);
+  basketballMesh = new THREE.Mesh(basketballGeometry, basketballMaterial);
   basketballMesh.castShadow = true;
   basketballMesh.receiveShadow = true;
   
@@ -399,16 +413,48 @@ function handleKeyDown(e) {
 
 document.addEventListener('keydown', handleKeyDown);
 
+document.addEventListener('keydown', (e) => {
+  if (e.key in keysPressed) {
+    keysPressed[e.key] = true;
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key in keysPressed) {
+    keysPressed[e.key] = false;
+  }
+});
+
+
 // Animation function - Loops at 60fps -Updates camera controls -Re-renders the scene
 
 function animate() {
   requestAnimationFrame(animate);
-  
-  // Update controls
+
+  // Basketball movement
+  if (basketballMesh) {
+    let dx = 0, dz = 0;
+    if (keysPressed.ArrowLeft) dx -= basketballSpeed;
+    if (keysPressed.ArrowRight) dx += basketballSpeed;
+    if (keysPressed.ArrowUp) dz -= basketballSpeed;
+    if (keysPressed.ArrowDown) dz += basketballSpeed;
+
+    const newX = basketballMesh.position.x + dx;
+    const newZ = basketballMesh.position.z + dz;
+
+    // Clamp position within bounds
+    if (newX >= courtBounds.minX && newX <= courtBounds.maxX) {
+      basketballMesh.position.x = newX;
+    }
+    if (newZ >= courtBounds.minZ && newZ <= courtBounds.maxZ) {
+      basketballMesh.position.z = newZ;
+    }
+  }
+
   controls.enabled = isOrbitEnabled;
   controls.update();
-  
   renderer.render(scene, camera);
 }
+
 
 animate();
