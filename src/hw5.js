@@ -31,6 +31,7 @@ renderer.shadowMap.enabled = true;
 directionalLight.castShadow = true;
 const basketballSpeed = 0.1;  // Movement speed
 
+let shotArrow = null;
 let shotPower = 50;             // Starting power at 50%
 let score = 0;
 let shotAttempts = 0;
@@ -432,11 +433,13 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'w' || e.key === 'W') {
     shotPower = Math.min(maxPower, shotPower + 1);
     updatePowerBar();
+    updatePowerText();
   }
 
   if (e.key === 's' || e.key === 'S') {
     shotPower = Math.max(minPower, shotPower - 1);
     updatePowerBar();
+    updatePowerText(); 
   }
 
   if (e.key === ' ') {
@@ -451,7 +454,6 @@ document.addEventListener('keydown', (e) => {
   }
 
 });
-
 
 document.addEventListener('keyup', (e) => {
   if (e.key in keysPressed) {
@@ -550,6 +552,11 @@ function animate() {
 
   controls.enabled = isOrbitEnabled;
   controls.update();
+
+  if (!isBallMoving) {
+    updateShotArrow();
+  }
+
   renderer.render(scene, camera);
 }
 
@@ -575,7 +582,19 @@ powerBarContainer.appendChild(powerBarFill);
 
 function updatePowerBar() {
   powerBarFill.style.width = `${shotPower}%`;
+  const red = Math.min(255, Math.floor((shotPower / 100) * 255));
+  const green = 255 - red;
+  powerBarFill.style.background = `rgb(${red}, ${green}, 0)`;
 }
+
+function updatePowerText() {
+  const powerText = document.getElementById("powerText");
+  powerText.textContent = `${shotPower}%`;
+  const red = Math.min(255, Math.floor((shotPower / 100) * 255));
+  const green = 255 - red;
+  powerText.style.color = `rgb(${red}, ${green}, 0)`;
+}
+
 
 function updateScoreboard() {
   document.getElementById('score').textContent = score;
@@ -624,6 +643,10 @@ function shootBall() {
   velocity.y = shotPower * 0.02;  // Add vertical arc
 
   isBallMoving = true;
+  if (shotArrow) {
+    scene.remove(shotArrow);
+    shotArrow = null;
+  }
 
   // Start new shot attempt
   document.getElementById('feedback').textContent = '';
@@ -642,6 +665,21 @@ function resetBall() {
 
   updateScoreboard();
   updatePowerBar();
+  updatePowerText();
+
 }
+
+function updateShotArrow() {
+  if (shotArrow) {
+    scene.remove(shotArrow);
+  }
+
+  if (!basketballMesh || isBallMoving) return;
+  const direction = new THREE.Vector3(0, 1, 0.5).normalize();  
+  const length = shotPower / 50 * 5; 
+  shotArrow = new THREE.ArrowHelper(direction, basketballMesh.position.clone(), length, 0xffff00);
+  scene.add(shotArrow);
+}
+
 
 animate();
