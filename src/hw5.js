@@ -32,6 +32,11 @@ directionalLight.castShadow = true;
 const basketballSpeed = 0.1;  // Movement speed
 
 let shotPower = 50;             // Starting power at 50%
+let score = 0;
+let shotAttempts = 0;
+let shotsMade = 0;
+let shotEvaluated = false;
+
 let isBallMoving = false;
 let velocity = new THREE.Vector3(0, 0, 0);
 const gravity = -0.02; // adjust for realism
@@ -400,9 +405,6 @@ addFreeThrowArcs(9, 0);   // Right side hoop
 
 createBasketball();
 
-
-
-
 // Set camera position for better view
 const cameraTranslate = new THREE.Matrix4();
 cameraTranslate.makeTranslation(0, 15, 30);
@@ -440,6 +442,8 @@ document.addEventListener('keydown', (e) => {
 
   if (e.key === ' ') {
     if (!isBallMoving) {
+      shotEvaluated = false;
+
       shootBall();
     }
   }
@@ -502,6 +506,39 @@ function animate() {
     // Update position
     basketballMesh.position.add(velocity);
 
+    // Check for scoring
+    if (velocity.y < 0) {
+      const ballX = basketballMesh.position.x;
+      const ballY = basketballMesh.position.y;
+      const ballZ = basketballMesh.position.z;
+
+      const hoopX = ballX < 0 ? -14 : 14;
+      const hoopZ = 0;
+      const rimRadius = 0.45;
+
+      const dx = ballX - hoopX;
+      const dz = ballZ - hoopZ;
+      const distanceToCenter = Math.sqrt(dx * dx + dz * dz);
+
+      const passedThroughHoop = (distanceToCenter < rimRadius) && (ballY < 3.05) && (ballY > 2.7);
+
+      if (passedThroughHoop) {
+        // Count the score
+        score += 2;
+        shotsMade += 1;
+        isBallMoving = false;
+        velocity.set(0, 0, 0);
+        showPopupMessage('✅ SHOT MADE!', 'green');
+        updateScoreboard();
+        
+      } else if (ballY < 0.71 && !shotEvaluated) {
+        // Ball hit ground and missed
+        showPopupMessage('❌ MISSED SHOT', 'red');
+        shotEvaluated = true;
+        updateScoreboard();
+      }
+    }
+
     // Ground collision
     if (basketballMesh.position.y <= 0.7) {
       basketballMesh.position.y = 0.7;
@@ -515,6 +552,7 @@ function animate() {
       if (Math.abs(velocity.y) < 0.05 && Math.abs(velocity.x) < 0.01 && Math.abs(velocity.z) < 0.01) {
         velocity.set(0, 0, 0);
         isBallMoving = false;
+        shotEvaluated = true;
       }
     }
 
@@ -522,8 +560,6 @@ function animate() {
     basketballMesh.position.x = Math.max(courtBounds.minX, Math.min(courtBounds.maxX, basketballMesh.position.x));
     basketballMesh.position.z = Math.max(courtBounds.minZ, Math.min(courtBounds.maxZ, basketballMesh.position.z));
   }
-
-
 
   controls.enabled = isOrbitEnabled;
   controls.update();
@@ -554,7 +590,39 @@ function updatePowerBar() {
   powerBarFill.style.width = `${shotPower}%`;
 }
 
+function updateScoreboard() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('attempts').textContent = shotAttempts;
+  document.getElementById('made').textContent = shotsMade;
+
+  const accuracy = shotAttempts > 0 ? ((shotsMade / shotAttempts) * 100).toFixed(1) : 0;
+  document.getElementById('accuracy').textContent = `${accuracy}%`;
+}
+
+function showPopupMessage(text, color = 'white') {
+  const popup = document.getElementById('popupMessage');
+  popup.textContent = text;
+  popup.style.display = 'block';
+  popup.style.opacity = '1';
+  popup.style.backgroundColor = color;
+
+  // Reset animation
+  popup.style.animation = 'none';
+  void popup.offsetWidth; // trigger reflow
+  popup.style.animation = 'fadeOut 2s ease-out forwards';
+
+  // Hide after 2 seconds
+  setTimeout(() => {
+    popup.style.display = 'none';
+  }, 2000);
+}
+
+
+
 function shootBall() {
+  shotAttempts += 1;
+  updateScoreboard();
+
   const ballPos = basketballMesh.position.clone();
   const leftHoop = new THREE.Vector3(-14, 3.05, 0);
   const rightHoop = new THREE.Vector3(14, 3.05, 0);
@@ -571,6 +639,9 @@ function shootBall() {
   velocity.y = shotPower * 0.02;  // Add vertical arc
 
   isBallMoving = true;
+
+  // Start new shot attempt
+  document.getElementById('feedback').textContent = '';
 }
 
 
