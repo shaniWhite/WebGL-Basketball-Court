@@ -36,7 +36,6 @@ let score = 0;
 let shotAttempts = 0;
 let shotsMade = 0;
 let shotEvaluated = false;
-
 let isBallMoving = false;
 let velocity = new THREE.Vector3(0, 0, 0);
 const gravity = -0.02; // adjust for realism
@@ -443,24 +442,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key === ' ') {
     if (!isBallMoving) {
       shotEvaluated = false;
-
       shootBall();
     }
   }
 
   if (e.key === 'r' || e.key === 'R') {
-    // Reset basketball to center court
-    basketballMesh.position.set(0, 0.7, 0);
-
-    // Reset velocity
-    velocity.set(0, 0, 0);
-
-    // Reset shot power
-    shotPower = 50;
-    updatePowerBar();
-
-    // Clear physics
-    isBallMoving = false;
+    resetBall();
   }
 
 });
@@ -617,8 +604,6 @@ function showPopupMessage(text, color = 'white') {
   }, 2000);
 }
 
-
-
 function shootBall() {
   shotAttempts += 1;
   updateScoreboard();
@@ -644,5 +629,19 @@ function shootBall() {
   document.getElementById('feedback').textContent = '';
 }
 
+function resetBall() {
+  // Reset basketball to center court
+  basketballMesh.position.set(0, 0.7, 0);
+
+  // Reset ball velocity to zero
+  velocity.set(0, 0, 0);
+  isBallMoving = false;
+
+  // Reset shot power to default
+  shotPower = 50;
+
+  updateScoreboard();
+  updatePowerBar();
+}
 
 animate();
