@@ -1,12 +1,11 @@
 
-
 // Shani White 
 // Daphne Messing 
 
-import {OrbitControls} from './OrbitControls.js'
+import { OrbitControls } from './OrbitControls.js';
 let basketballMesh;
 
-// initialize the 3D scene
+// Initialize the 3D scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -15,21 +14,21 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Set background color to black
+// Background
 scene.background = new THREE.Color(0x000000);
 
-// Add lights to the scene
+// Lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 directionalLight.position.set(10, 20, 15);
+directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-// Enable shadows
 renderer.shadowMap.enabled = true;
-directionalLight.castShadow = true;
-const basketballSpeed = 0.1;  // Movement speed
+const basketballSpeed = 0.1;
+
 
 let shotArrow = null;
 let shotPower = 50;             // Starting power at 50%
@@ -39,6 +38,7 @@ let shotsMade = 0;
 let shotEvaluated = false;
 let isBallMoving = false;
 let velocity = new THREE.Vector3(0, 0, 0);
+let reachedApex = false;
 const gravity = -0.02; // adjust for realism
 const restitution = 0.6; // Energy loss (0.6 = 60% of velocity retained after bounce)
 const minPower = 0;
@@ -154,8 +154,8 @@ function createHoopSide(x, z) {
   const isLeftSide = x < 0;
 
   //  Rim
-  const rimRadius = 0.45;
-  const rimTube = 0.05;
+  const rimRadius = 0.5;
+  const rimTube = 0.04;
   const rimHeight = 3.05;
 
   const rimGeometry = new THREE.TorusGeometry(rimRadius, rimTube, 16, 100);
@@ -346,7 +346,7 @@ function FreeThrowLine(x, z, width = 6, height = 5, color = 0x5a2d0c) {
   const paint = new THREE.Mesh(geometry, material);
   paint.rotation.x = -Math.PI / 2; // flat on ground
 
-  // ✅ Position rectangle to start at the baseline and go inward
+  // Position rectangle to start at the baseline and go inward
   paint.position.set(x, 0.11, z); // Centered forward from rim
 
   scene.add(paint);
@@ -393,7 +393,6 @@ function addFreeThrowArcs(xCenter, zCenter, radius = 1.8, segments = 32) {
   scene.add(dashedArc);
 }
 
-
 // Create all elements
 createBasketballCourt();
 createHoopSide(14, 0);   // Right hoop
@@ -402,8 +401,8 @@ FreeThrowLine(12, 0);    // Right side
 FreeThrowLine(-12, 0);   // Left side 
 addFreeThrowArcs(-9, 0);  // Left side hoop
 addFreeThrowArcs(9, 0);   // Right side hoop
-
 createBasketball();
+
 
 // Set camera position for better view
 const cameraTranslate = new THREE.Matrix4();
@@ -462,10 +461,15 @@ document.addEventListener('keyup', (e) => {
 });
 
 
-// Animation function - Loops at 60fps -Updates camera controls -Re-renders the scene
 
-function animate() {
+// Animation function - Loops at 60fps -Updates camera controls -Re-renders the scene
+let lastTime = performance.now();
+
+function animate(currentTime) {
   requestAnimationFrame(animate);
+
+  const delta = (currentTime - lastTime) / 1000; 
+  lastTime = currentTime;
 
   // Basketball movement
   if (basketballMesh) {
@@ -491,9 +495,18 @@ function animate() {
   if (isBallMoving) {
     // Apply gravity
     velocity.y += gravity;
+    if (!reachedApex && velocity.y < 0) {
+      reachedApex = true;
+    }
 
     // Update position
     basketballMesh.position.add(velocity);
+    // Add rotation based on velocity direction and speed
+    if (basketballMesh) {
+      const rotationAxis = velocity.clone().normalize();
+      const rotationSpeed = velocity.length() * 0.05; // אפשר לכוונן את הקצב כאן
+      basketballMesh.rotateOnAxis(rotationAxis, rotationSpeed);
+    }
 
     // Check for scoring
     if (velocity.y < 0) {
@@ -509,14 +522,19 @@ function animate() {
       const dz = ballZ - hoopZ;
       const distanceToCenter = Math.sqrt(dx * dx + dz * dz);
 
-      const passedThroughHoop = (distanceToCenter < rimRadius) && (ballY < 3.05) && (ballY > 2.7);
+      const withinHoopRadius = distanceToCenter < rimRadius;
+      const withinHoopHeight = ballY < 3.1 && ballY > 2.6;
+      const movingDownward = velocity.y < -0.02;
+
+      const passedThroughHoop = withinHoopRadius && withinHoopHeight && movingDownward && reachedApex;
 
       if (passedThroughHoop) {
         // Count the score
         score += 2;
         shotsMade += 1;
-        isBallMoving = false;
-        velocity.set(0, 0, 0);
+        shotEvaluated = true;
+        velocity.x *= 0.3;     
+        velocity.z *= 0.3;
         showPopupMessage('✅ SHOT MADE!', 'green');
         updateScoreboard();
         
@@ -560,32 +578,18 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// POWER BAR UI
-const powerBarContainer = document.createElement('div');
-powerBarContainer.style.position = 'absolute';
-powerBarContainer.style.bottom = '20px';
-powerBarContainer.style.left = '50%';
-powerBarContainer.style.transform = 'translateX(-50%)';
-powerBarContainer.style.width = '300px';
-powerBarContainer.style.height = '20px';
-powerBarContainer.style.border = '2px solid white';
-powerBarContainer.style.background = '#333';
-powerBarContainer.style.zIndex = 10;
-document.body.appendChild(powerBarContainer);
+document.getElementById("power-fill").style.width = `${shotPower}%`;
 
-const powerBarFill = document.createElement('div');
-powerBarFill.style.height = '100%';
-powerBarFill.style.width = `${shotPower}%`;
-powerBarFill.style.background = 'limegreen';
-powerBarFill.style.transition = 'width 0.1s ease-out';
-powerBarContainer.appendChild(powerBarFill);
 
 function updatePowerBar() {
-  powerBarFill.style.width = `${shotPower}%`;
+  const powerFill = document.getElementById("power-fill"); // במקום powerBarFill
+  powerFill.style.width = `${shotPower}%`;
+
   const red = Math.min(255, Math.floor((shotPower / 100) * 255));
   const green = 255 - red;
-  powerBarFill.style.background = `rgb(${red}, ${green}, 0)`;
+  powerFill.style.background = `rgb(${red}, ${green}, 0)`;
 }
+
 
 function updatePowerText() {
   const powerText = document.getElementById("powerText");
@@ -623,34 +627,60 @@ function showPopupMessage(text, color = 'white') {
   }, 2000);
 }
 
+function calculateShotVelocity(power, startPos, targetPos) {
+  const powerFactor = (power / 100) * 1.2 + 0.5; // Balanced power: 0.5 to 1.7 (strong enough but not excessive)
+  const dx = targetPos.x - startPos.x;
+  const dz = targetPos.z - startPos.z;
+  const distance = Math.sqrt(dx * dx + dz * dz);
+  
+  // Ensure proper arc for close shots (inside paint)
+  let optimalAngle;
+  if (distance < 4.0) {
+    // For close shots, use a steeper angle (50-60 degrees) for proper arc
+    optimalAngle = Math.PI / 3 + (Math.PI / 12); // ~55-60 degrees
+  } else {
+    // For longer shots, use standard calculation
+    optimalAngle = Math.PI / 4 + (distance / 30) * (Math.PI / 6); // Adjust angle based on distance
+  }
+  
+  // Calculate initial speed needed to reach target (balanced multiplier)
+  const speed = Math.sqrt(Math.abs(gravity) * distance / Math.sin(2 * optimalAngle)) * powerFactor * 1.3;
+  
+  // Convert to velocity components
+  const horizontalSpeed = speed * Math.cos(optimalAngle);
+  const verticalSpeed = speed * Math.sin(optimalAngle);
+  
+  // Normalize horizontal direction
+  const horizontalDistance = Math.sqrt(dx * dx + dz * dz);
+  const vx = horizontalDistance > 0 ? (dx / horizontalDistance) * horizontalSpeed : 0;
+  const vz = horizontalDistance > 0 ? (dz / horizontalDistance) * horizontalSpeed : 0;
+  
+  return new THREE.Vector3(vx, verticalSpeed, vz);
+}
+
+
 function shootBall() {
   shotAttempts += 1;
   updateScoreboard();
+  reachedApex = false;
 
   const ballPos = basketballMesh.position.clone();
   const leftHoop = new THREE.Vector3(-14, 3.05, 0);
   const rightHoop = new THREE.Vector3(14, 3.05, 0);
 
-  // Pick the nearest hoop
   const distLeft = ballPos.distanceTo(leftHoop);
   const distRight = ballPos.distanceTo(rightHoop);
   const target = distLeft < distRight ? leftHoop : rightHoop;
 
-  const dir = new THREE.Vector3().subVectors(target, ballPos).normalize();
-
-  // Apply shot velocity based on power (scaled)
-  velocity.copy(dir.multiplyScalar(shotPower * 0.03));  // Tune factor as needed
-  velocity.y = shotPower * 0.02;  // Add vertical arc
+  velocity.copy(calculateShotVelocity(shotPower, ballPos, target));
 
   isBallMoving = true;
   if (shotArrow) {
     scene.remove(shotArrow);
     shotArrow = null;
   }
-
-  // Start new shot attempt
-  document.getElementById('feedback').textContent = '';
 }
+
 
 function resetBall() {
   // Reset basketball to center court
@@ -675,11 +705,38 @@ function updateShotArrow() {
   }
 
   if (!basketballMesh || isBallMoving) return;
-  const direction = new THREE.Vector3(0, 1, 0.5).normalize();  
-  const length = shotPower / 50 * 5; 
-  shotArrow = new THREE.ArrowHelper(direction, basketballMesh.position.clone(), length, 0xffff00);
+
+  const ballPos = basketballMesh.position.clone();
+  const leftHoop = new THREE.Vector3(-14, 3.05, 0);
+  const rightHoop = new THREE.Vector3(14, 3.05, 0);
+
+  const distLeft = ballPos.distanceTo(leftHoop);
+  const distRight = ballPos.distanceTo(rightHoop);
+  const target = distLeft < distRight ? leftHoop : rightHoop;
+
+  const direction = calculateShotVelocity(shotPower, ballPos, target).normalize();
+  const length = shotPower / 100 * 8;
+  shotArrow = new THREE.ArrowHelper(direction, ballPos, length, 0xffff00);
   scene.add(shotArrow);
 }
 
 
+
 animate();
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.body.focus();
+    console.log("✅ Document focused on load");
+  }, 100);
+});
+
+document.addEventListener('mousedown', () => {
+  document.body.focus();
+  console.log("✅ Focus returned after click");
+});
+
+
+
+
+

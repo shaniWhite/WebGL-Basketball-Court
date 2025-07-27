@@ -1,108 +1,171 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>HW6 - Basketball Game</title>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basketball Challenge</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0d0d0d;
+      color: #eee;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
 
-      #scoreboard {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background-color: rgba(255, 255, 255, 0.85);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 18px;
-        font-family: sans-serif;
-        color: #000;
-        z-index: 100;
-      }
+    #scoreboard {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(20, 20, 20, 0.85);
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: 1px solid #ffa500;
+      text-align: center;
+      font-size: 14px;
+      box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+      z-index: 100;
+    }
 
-      #scoreboard div {
-        margin-bottom: 4px;
-      }
+    #scoreboard div {
+      margin: 4px 0;
+    }
 
-      #instructions {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        background-color: rgba(0, 0, 0, 0.65);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-family: sans-serif;
-        color: #fff;
-        z-index: 100;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-      }
-	  #instructions li {
-		margin-bottom: 4px;
-	  }
+    #analysis {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: sans-serif;
+      color: #f8f8f8;
+      z-index: 100;
+      max-width: 240px;
+      border-left: 4px solid #ffa500;
+      box-shadow: 0 0 8px rgba(255,165,0,0.2);
+    }
+
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: sans-serif;
+      color: #f8f8f8;
+      z-index: 100;
+      max-width: 240px;
+      border-left: 4px solid #ffa500;
+      box-shadow: 0 0 8px rgba(255,165,0,0.2);
+    }
+
+    #instructions h3 {
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: #ffcc00;
+    }
+
+    #instructions ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    #instructions li {
+      margin-bottom: 6px;
+    }
 
     #popupMessage {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        font-size: 32px;
-        padding: 20px 40px;
-        border-radius: 12px;
-        z-index: 200;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(30, 30, 30, 0.9);
+      color: #ffd700;
+      font-size: 30px;
+      padding: 20px 40px;
+      border-radius: 12px;
+      z-index: 200;
+      display: none;
+      font-family: sans-serif;
+      text-align: center;
+      animation: fadeOut 2s ease-out forwards;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+
+    #power-indicator {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 20px;
+      background: #333;
+      border: 2px solid white;
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 100;
+    }
+    #power-fill {
+      height: 100%;
+      width: 50%; /* set dynamically */
+      background: limegreen;
+      transition: width 0.2s ease;
+    }
+
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% {
+        opacity: 0;
         display: none;
-        font-family: sans-serif;
-        text-align: center;
-        animation: fadeOut 2s ease-out forwards;
       }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body tabindex="0">
 
-      @keyframes fadeOut {
-        0% {
-          opacity: 1;
-        }
-        80% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-          display: none;
-        }
-      }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  </head>
+  <div id="scoreboard">
+    <h2 style="color: #ffa500; margin-bottom: 8px;">Basketball Challenge 🏀</h2>
+    <div><strong>Score:</strong> <span id="score">0</span></div>
+  </div>
 
-  <body>
-    <!-- ✅ UI Containers -->
-    <div id="scoreboard">
-      <div><strong>Score:</strong> <span id="score">0</span></div>
-      <div><strong>Shots Attempted:</strong> <span id="attempts">0</span></div>
-      <div><strong>Shots Made:</strong> <span id="made">0</span></div>
-      <div><strong>Accuracy:</strong> <span id="accuracy">0%</span></div>
-      <div><strong>Shot Power:</strong> <span id="powerText">50%</span></div>
-    </div>
+  <div id="analysis">
+    <!-- <h2 style="color: #ffa500; margin-bottom: 8px;">Analysis</h2> -->
+    <div><strong>Shots Attempted:</strong> <span id="attempts">0</span></div>
+    <div><strong>Shots Made:</strong> <span id="made">0</span></div>
+    <div><strong>Accuracy:</strong> <span id="accuracy">0%</span></div>
+    <div><strong>Shot Power:</strong> <span id="powerText">50%</span></div>
+  </div>
 
-    <div id="instructions">
-		<h3>Controls:</h3>
-		<ul>
-        <li><strong>Arrow Keys</strong> – Move Ball</li>
-        <li><strong>W/S</strong> – Adjust Shot Power</li>
-        <li><strong>Spacebar</strong> – Shoot Ball</li>
-        <li><strong>R</strong> – Reset Ball</li>
-        <li><strong>O</strong> – Toggle Orbit Camera</li>
-        <li><strong>Mouse</strong> – Orbit / Pan / Zoom</li>
-		</ul>
-    </div>
+  <div id="instructions">
+    <h3>Controls</h3>
+    <ul>
+      <li><strong>Arrow Keys</strong> – Move Ball</li>
+      <li><strong>W / S</strong> – Adjust Shot Power</li>
+      <li><strong>Spacebar</strong> – Shoot Ball</li>
+      <li><strong>R</strong> – Reset Ball</li>
+      <li><strong>O</strong> – Toggle Orbit Camera</li>
+      <li><strong>Mouse</strong> – Orbit / Pan / Zoom</li>
+    </ul>
+  </div>
 
-    <div id="popupMessage"></div>
+  <div id="power-indicator">
+    <div id="power-fill"></div>
+  </div>
 
-    <!-- ✅ JS Entry -->
-    <script src="src/hw5.js" type="module"></script>
-  </body>
+  <div id="popupMessage"></div>
+
+  <script src="src/hw5.js" type="module"></script>
+</body>
 </html>
