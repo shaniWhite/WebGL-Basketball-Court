@@ -413,7 +413,6 @@ camera.applyMatrix4(cameraTranslate);
 const controls = new OrbitControls(camera, renderer.domElement);
 let isOrbitEnabled = true;
 
-
 // Handle key events
 function handleKeyDown(e) {
   if (e.key === "o") {
@@ -459,8 +458,6 @@ document.addEventListener('keyup', (e) => {
     keysPressed[e.key] = false;
   }
 });
-
-
 
 // Animation function - Loops at 60fps -Updates camera controls -Re-renders the scene
 let lastTime = performance.now();
@@ -508,7 +505,6 @@ function animate(currentTime) {
       basketballMesh.rotateOnAxis(rotationAxis, rotationSpeed);
     }
 
-    // Check for scoring
     if (velocity.y < 0) {
       const ballX = basketballMesh.position.x;
       const ballY = basketballMesh.position.y;
