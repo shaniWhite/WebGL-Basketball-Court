@@ -676,7 +676,6 @@ function calculateShotVelocity(power, startPos, targetPos) {
   return new THREE.Vector3(vx, verticalSpeed, vz);
 }
 
-
 function shootBall() {
   shotAttempts += 1;
   hasScoredThisShot = false;
@@ -700,12 +699,10 @@ function shootBall() {
   }
 }
 
-
 function resetBall() {
   // Reset basketball to center court
   basketballMesh.position.set(0, 0.7, 0);
 
-  // Reset ball velocity to zero
   velocity.set(0, 0, 0);
   isBallMoving = false;
 
@@ -742,7 +739,6 @@ function updateShotArrow() {
 
 
 animate();
-
 window.addEventListener('load', () => {
   setTimeout(() => {
     document.body.focus();
