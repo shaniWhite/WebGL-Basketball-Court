@@ -18,9 +18,6 @@ document.body.appendChild(renderer.domElement);
 scene.background = new THREE.Color(0x000000);
 
 /// --- Lighting ---
-// Remove old lights if present
-// Add realistic lighting: ambient, spotlights, and soft fill
-
 // Soft ambient light for base illumination
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
 scene.add(ambientLight);
@@ -63,6 +60,7 @@ let shotEvaluated = false;
 let isBallMoving = false;
 let velocity = new THREE.Vector3(0, 0, 0);
 let reachedApex = false;
+let hasScoredThisShot = false;
 const gravity = -0.02; // adjust for realism
 const restitution = 0.6; // Energy loss (0.6 = 60% of velocity retained after bounce)
 const minPower = 0;
@@ -548,10 +546,10 @@ function animate(currentTime) {
 
       const passedThroughHoop = withinHoopRadius && withinHoopHeight && movingDownward && reachedApex;
 
-      if (passedThroughHoop) {
-        // Count the score
-        score += 2;
+      if (passedThroughHoop && !hasScoredThisShot) {
+        hasScoredThisShot = true;
         shotsMade += 1;
+        score += 2;
         shotEvaluated = true;
         velocity.x *= 0.3;     
         velocity.z *= 0.3;
@@ -681,6 +679,7 @@ function calculateShotVelocity(power, startPos, targetPos) {
 
 function shootBall() {
   shotAttempts += 1;
+  hasScoredThisShot = false;
   updateScoreboard();
   reachedApex = false;
 

@@ -118,3 +118,5 @@ Sometimes a basket is counted even if the ball only clips the rim or bounces nea
 ![](screenshots/basketball.png)
 - ✅ Demonstration of camera orbit functionality  
 ![](screenshots/orbit_demo.gif)
+- ✅ Demonstration of physics
+![](screenshots/physics.gif)
