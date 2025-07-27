@@ -17,6 +17,8 @@
 - Use your mouse to interactively orbit, zoom, and pan around the basketball court.
 - Ensure the folder structure is preserved, especially `/src`, `/screenshots`, and any texture assets used.
 
+---
+
 ## 🕹️ Controls
 
 | Key           | Action                          |
@@ -29,6 +31,7 @@
 | `Mouse`       | Orbit, zoom, and pan camera     |
 
 ---
+
 ## Features Implemented
 
 ✅ Regulation-size basketball court with:
@@ -52,9 +55,14 @@
 - On-screen control instructions
 
 ✅ Lighting & Camera:
-- Ambient and directional lights with shadow casting
+- Ambient light with shadow casting
+- Multiple directional spotlights simulate stadium lighting from above, casting realistic shadows and highlighting the court dynamically.
+- Hemisphere Light:  
+  Adds gentle fill light from sky and ground to soften shadow transitions and enhance realism.
 - Initial camera positioned for court overview
 - Orbit camera controls (toggle with **O** key)
+
+---
 
 ## 🧠 Physics System
 
@@ -87,7 +95,6 @@
 ## ✨ Additional Features
 
 - 🎯 Dynamic aiming arrow based on power and direction
-- 📈 Trajectory preview using animated arc
 - 🔁 Auto hoop targeting based on ball position
 - 🌀 Ball rotates while flying for realism
 - 💡 Visual power meter and animated UI panel

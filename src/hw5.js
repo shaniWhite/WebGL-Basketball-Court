@@ -17,19 +17,43 @@ document.body.appendChild(renderer.domElement);
 // Background
 scene.background = new THREE.Color(0x000000);
 
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+/// --- Lighting ---
+// Remove old lights if present
+// Add realistic lighting: ambient, spotlights, and soft fill
+
+// Soft ambient light for base illumination
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(10, 20, 15);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
+// Main stadium spotlights (simulate arena lights)
+const spotlights = [];
+const spotlightPositions = [
+  [0, 25, 0],    // Center
+  [-12, 22, 7], // Corners
+  [12, 22, 7],
+  [-12, 22, -7],
+  [12, 22, -7]
+];
+spotlightPositions.forEach(([x, y, z]) => {
+  const spot = new THREE.SpotLight(0xffffff, 0.4, 80, Math.PI / 5, 0.3, 1.5);
+  spot.position.set(x, y, z);
+  spot.castShadow = true;
+  spot.shadow.mapSize.width = 1024;
+  spot.shadow.mapSize.height = 1024;
+  spot.shadow.bias = -0.0005;
+  spot.target.position.set(0, 0, 0);
+  scene.add(spot);
+  scene.add(spot.target);
+  spotlights.push(spot);
+});
+
+// Soft fill light to reduce harsh shadows
+const fillLight = new THREE.HemisphereLight(0xffffff, 0x222233, 0.15);
+scene.add(fillLight);
 
 renderer.shadowMap.enabled = true;
+
 const basketballSpeed = 0.1;
-
-
 let shotArrow = null;
 let shotPower = 50;             // Starting power at 50%
 let score = 0;
