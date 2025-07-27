@@ -1,4 +1,4 @@
-# WebGL Basketball Court - HW5
+# Computer Graphics - Exercise 5 - WebGL Basketball Court
 
 ###### Group Members ############
 
@@ -6,8 +6,6 @@
 - Daphne Messing - 322630518
 
 ###### ######################
-
-## How to Run the Project
 
 ## How to Run This Project
 
@@ -19,7 +17,18 @@
 - Use your mouse to interactively orbit, zoom, and pan around the basketball court.
 - Ensure the folder structure is preserved, especially `/src`, `/screenshots`, and any texture assets used.
 
+## 🕹️ Controls
 
+| Key           | Action                          |
+|---------------|---------------------------------|
+| ↑ / ↓ / ← / → | Move the basketball             |
+| `W` / `S`     | Increase / Decrease shot power  |
+| `SPACE`       | Shoot the ball                  |
+| `R`           | Reset ball to center court      |
+| `O`           | Toggle orbit camera             |
+| `Mouse`       | Orbit, zoom, and pan camera     |
+
+---
 ## Features Implemented
 
 ✅ Regulation-size basketball court with:
@@ -47,11 +56,47 @@
 - Initial camera positioned for court overview
 - Orbit camera controls (toggle with **O** key)
 
-## Additional features implemented
-- More detailed court markings- Painted key area rectangles and free point line 
+## 🧠 Physics System
+
+- **Gravity & Trajectory:**  
+  The ball is affected by gravity and follows a parabolic arc based on power and direction.
+
+- **Shot Power & Angle:**  
+  Shot velocity is determined by both the user's power setting and distance to the hoop. Short shots use a steeper angle.
+
+- **Realistic Bouncing:**  
+  Ball bounces off the ground with energy loss until it settles.
+
+- **Rim & Ground Collision:**  
+  Hoop detection ensures the ball must enter from above to count. Rim radius is precisely measured.
+
+---
+
+## 📊 Scoring Logic
+
+- ✅ Basket only counts if ball enters from **above**
+- ❌ Shots from underneath are ignored
+- 🧮 Live stats:  
+  - Total shots  
+  - Made shots  
+  - Accuracy percentage  
+  - Shot power
+
+---
+
+## ✨ Additional Features
+
+- 🎯 Dynamic aiming arrow based on power and direction
+- 📈 Trajectory preview using animated arc
+- 🔁 Auto hoop targeting based on ball position
+- 🌀 Ball rotates while flying for realism
+- 💡 Visual power meter and animated UI panel
+- 🎨 Clean responsive interface for game feedback
 
 ## Known Issues or Limitations
-- The basketball uses a texture-mapped image for its visual design, not a procedurally generated or animated mesh
+❌ The basketball uses a texture-mapped image for its visual design, not a procedurally generated or animated mesh
+❌ Scoring logic is overly generous –  
+Sometimes a basket is counted even if the ball only clips the rim or bounces nearby.  
 
 ## External Assets Used
 
