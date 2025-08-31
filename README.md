@@ -11,7 +11,7 @@ Includes a full court, realistic hoops, physics-based ball movement, scoring sys
 ## 🚀 Getting Started
 
 1. Clone the repository
-git clone https://github.com/USERNAME/webgl-basketball-game.git
+git clone https://github.com/shaniWhite/WebGL-Basketball-Court.git
 cd webgl-basketball-game
 2. Install dependencies
 npm install
