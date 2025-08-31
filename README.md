@@ -38,29 +38,29 @@ Navigate to the local server URL shown in the terminal
 
 ## ✨ Features
 
-Full basketball court with regulation markings
+- Full basketball court with regulation markings
 
-Detailed hoops with backboard, rim, net, and support
+- Detailed hoops with backboard, rim, net, and support
 
-Physics-based gameplay (gravity, arc, bounce, rim detection)
+- Physics-based gameplay (gravity, arc, bounce, rim detection)
 
-Scoreboard & live stats (shots, makes, accuracy, power)
+- Scoreboard & live stats (shots, makes, accuracy, power)
 
-Dynamic UI with power bar, popup messages, and aiming arrow
+- Dynamic UI with power bar, popup messages, and aiming arrow
 
-Smooth camera controls with orbit, zoom, and pan
+- Smooth camera controls with orbit, zoom, and pan
 
 ---
 
 ## 🧠 Physics System
 
-Gravity & Trajectory: Ball follows a realistic arc based on power and direction.
+- Gravity & Trajectory: Ball follows a realistic arc based on power and direction.
 
-Shot Power & Angle: Velocity depends on power setting and hoop distance.
+- Shot Power & Angle: Velocity depends on power setting and hoop distance.
 
-Bouncing: Ball loses energy with each bounce until it stops.
+- Bouncing: Ball loses energy with each bounce until it stops.
 
-Rim & Ground Collision: Hoop detection ensures baskets only count from above.
+- Rim & Ground Collision: Hoop detection ensures baskets only count from above.
 
 ---
 
