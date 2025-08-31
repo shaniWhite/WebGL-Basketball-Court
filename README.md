@@ -113,6 +113,7 @@ Sometimes a basket is counted even if the ball only clips the rim or bounces nea
 - ✅ Overall view of the basketball court with hoops  
 ![](screenshots/full_court.png)
 - ✅ Close-up view of basketball hoops with nets 
+
 ![](screenshots/hoops.png)
 - ✅ Basketball positioned at center court  
 ![](screenshots/basketball.png)
